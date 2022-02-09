@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        maven {
+            url = "https://maven.fabricmc.net"
+            name = "FabricMC"
+        }
+        gradlePluginPortal()
+        mavenLocal()
+    }
+}
+
+rootProject.name='VintageMC'
+
+includeBuild 'loom-plugin'
+
+include 'fml-compat'
+include 'fml-compat:1.4.7'

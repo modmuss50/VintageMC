@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "vintage-fml-compat",
+  "version": "${version}",
+  "name": "VintageMC FML Compat",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "environment": "*",
+  "entrypoints": {
+    "preLaunch": [
+      "vintagemc.fml.compat.FMLPreLaunch"
+    ]
+  },
+  "mixins": [
+    "vintage-fml-compat.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.13.0",
+    "java": ">=17"
+  },
+  "accessWidener": "vintage-fml-compat.accesswidener"
+}

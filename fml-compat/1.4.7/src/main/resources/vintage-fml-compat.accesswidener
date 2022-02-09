@@ -1,0 +1,7 @@
+accessWidener   v2  named
+
+accessible  field cpw/mods/fml/relauncher/FMLRelaunchLog minecraftHome Ljava/io/File;
+accessible  field cpw/mods/fml/relauncher/FMLRelauncher side Ljava/lang/String;
+accessible  field cpw/mods/fml/relauncher/FMLRelauncher classLoader Lcpw/mods/fml/relauncher/RelaunchClassLoader;
+
+accessible  method  cpw/mods/fml/relauncher/FMLRelauncher   instance    ()Lcpw/mods/fml/relauncher/FMLRelauncher;

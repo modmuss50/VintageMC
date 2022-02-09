@@ -1,0 +1,52 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+group = 'vintagemc'
+version = '0.0.1'
+
+repositories {
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation 'net.fabricmc:fabric-loom:0.12.local'
+    implementation 'net.fabricmc:mapping-io:0.2.1'
+    implementation 'net.fabricmc:tiny-remapper:0.8.1'
+    implementation 'com.google.guava:guava:31.0.1-jre'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
+}
+
+gradlePlugin {
+    plugins {
+        greeting {
+            id = 'vintagemc.loom'
+            implementationClass = 'vintagemc.loom.VintageLoomPlugin'
+        }
+    }
+}
+
+tasks.named('test') {
+    // Use JUnit Jupiter for unit tests.
+    useJUnitPlatform()
+}
+
+
+publishing {
+    publications {
+        plugin(MavenPublication) { publication ->
+            groupId project.group
+            artifactId project.archivesBaseName
+            version project.version
+
+            from components.java
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "vintagemc.fml.compat.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "MinecraftAppletMixin",
+    "LoaderMixin",
+    "FMLRelauncherMixin",
+    "ModDiscovererMixin",
+    "FMLCommonHandlerMixin",
+    "JarDiscovererMixin",
+    "ASM9Mixin",
+    "ASMModParserMixin",
+    "RelaunchLibraryManagerMixin",
+    "FMLInjectionDataMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

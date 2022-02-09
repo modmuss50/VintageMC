@@ -1,0 +1,25 @@
+# Ignore everything
+/*
+
+# Folders
+!/gradle
+!/src
+!/fml-compat
+!/loom-plugin
+!/mcp
+
+/mcp/*.zip
+
+# Files
+!/.gitattributes
+!/.gitignore
+!/build.gradle
+!/gradle.properties
+!/gradlew
+!/gradlew.bat
+!/README.md
+!/settings.gradle
+
+/**/.gradle
+/**/build
+/**/run

@@ -1,0 +1,33 @@
+subprojects {
+    apply plugin: 'fabric-loom'
+    apply plugin: 'vintagemc.loom'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        maven {
+            name = 'Forge'
+            url = 'https://maven.minecraftforge.net/'
+            metadataSources {
+                artifact()
+            }
+        }
+    }
+
+    loom {
+        runConfigs.configureEach {
+            ideConfigGenerated = true
+        }
+    }
+
+    dependencies {
+        modImplementation "net.fabricmc:fabric-loader:0.13.1"
+    }
+
+    processResources {
+        inputs.property "version", project.version
+
+        filesMatching("fabric.mod.json") {
+            expand "version": project.version
+        }
+    }
+}

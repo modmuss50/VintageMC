@@ -1,0 +1,28 @@
+plugins {
+    id 'fabric-loom' version '0.12.local' apply false
+    id 'vintagemc.loom'  apply false
+}
+
+allprojects {
+    apply plugin: 'java-library'
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        mavenCentral()
+        mavenLocal()
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 17
+    }
+
+    java {
+        withSourcesJar()
+    }
+}
