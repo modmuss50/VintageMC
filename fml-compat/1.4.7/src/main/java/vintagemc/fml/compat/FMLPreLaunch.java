@@ -3,8 +3,10 @@ package vintagemc.fml.compat;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.FMLRelaunchLog;
 import cpw.mods.fml.relauncher.FMLRelauncher;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
+import vintagemc.fml.compat.coremod.CoreModLocator;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +36,13 @@ public class FMLPreLaunch implements PreLaunchEntrypoint {
 		String mccversion = properties.getProperty("fmlbuild.mcversion", "missing");
 		String mcpversion = properties.getProperty("fmlbuild.mcpversion", "missing");
 
+		// See: FMLRelauncher.handleClientRelaunch
+		FMLRelauncher.logFileNamePattern = "ForgeModLoader-client-%g.log";
+		FMLRelauncher.side = "CLIENT";
+
+		CoreModLocator.setup();
+		List<String> containers = CoreModLocator.LOADING_PLUGINS.stream().map(IFMLLoadingPlugin::getModContainerClass).toList();
+
 		injectionData = new Object[]{
 				major,
 				minor,
@@ -42,14 +51,10 @@ public class FMLPreLaunch implements PreLaunchEntrypoint {
 				mccversion,
 				mcpversion,
 				FabricLoader.getInstance().getGameDir().toFile(),
-				List.of("cpw.mods.fml.common.FMLDummyContainer", "net.minecraftforge.common.ForgeDummyContainer") // containers
+				containers
 		};
 
 		Loader.injectData(injectionData);
-
-		// See: FMLRelauncher.handleClientRelaunch
-		FMLRelauncher.logFileNamePattern = "ForgeModLoader-client-%g.log";
-		FMLRelauncher.side = "CLIENT";
 
 		FMLRelaunchLog.minecraftHome = FabricLoader.getInstance().getGameDir().toFile();
 

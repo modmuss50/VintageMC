@@ -8,6 +8,7 @@ import net.fabricmc.loom.util.FileSystemUtil;
 import net.fabricmc.loom.util.TinyRemapperHelper;
 import net.fabricmc.loom.util.ZipUtils;
 import net.fabricmc.lorenztiny.TinyMappingsReader;
+import net.fabricmc.mappingio.tree.MemoryMappingTree;
 import net.fabricmc.tinyremapper.NonClassCopyMode;
 import net.fabricmc.tinyremapper.OutputConsumerPath;
 import net.fabricmc.tinyremapper.TinyRemapper;
@@ -21,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 public class ForgeJarProcessor implements JarProcessor {
@@ -118,15 +120,17 @@ public class ForgeJarProcessor implements JarProcessor {
         }
 
         final LoomGradleExtension extension = LoomGradleExtension.get(project);
+        final MemoryMappingTree mappingTree = extension.getMappingsProvider().getMappings();
         final MappingSet mappingSet;
 
-        try (TinyMappingsReader reader = new TinyMappingsReader(extension.getMappingsProvider().getMappings(), MappingsNamespace.OFFICIAL.toString(), MappingsNamespace.NAMED.toString())) {
+        try (TinyMappingsReader reader = new TinyMappingsReader(mappingTree, MappingsNamespace.OFFICIAL.toString(), MappingsNamespace.NAMED.toString())) {
             mappingSet = reader.read();
         }
 
         ZipUtils.transformString(output, Map.of(
             "fml_at.cfg", remapAT(mappingSet),
-            "forge_at.cfg", remapAT(mappingSet)
+            "forge_at.cfg", remapAT(mappingSet),
+            "fml_marker.cfg", remapMarker(mappingTree)
         ));
 
         return output;
@@ -149,6 +153,32 @@ public class ForgeJarProcessor implements JarProcessor {
             }
 
             return writer.toString();
+        };
+    }
+
+    private ZipUtils.UnsafeUnaryOperator<String> remapMarker(MemoryMappingTree mappingTree) {
+        final int namedId = mappingTree.getNamespaceId(MappingsNamespace.NAMED.toString());
+
+        return arg -> {
+            StringJoiner builder = new StringJoiner("\n");
+
+            for (String line : arg.split("\n")) {
+                if (line.startsWith("#")) {
+                    builder.add(line);
+                    continue;
+                }
+
+                final String[] split = line.split(" ");
+
+                String clazz = split[0];
+                String iface = split[1];
+
+                clazz = mappingTree.mapClassName(clazz, namedId).replace("/", ".");
+
+                builder.add("%s %s".formatted(clazz, iface));
+            }
+
+            return builder.toString();
         };
     }
 

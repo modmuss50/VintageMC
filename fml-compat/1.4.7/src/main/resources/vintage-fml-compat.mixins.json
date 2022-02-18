@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "vintagemc.fml.compat.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "vintagemc.fml.compat.mixin.FMLCoremodMixinConfigPlugin",
   "mixins": [
   ],
   "client": [
@@ -15,7 +16,8 @@
     "ASM9Mixin",
     "ASMModParserMixin",
     "RelaunchLibraryManagerMixin",
-    "FMLInjectionDataMixin"
+    "FMLInjectionDataMixin",
+    "EventTransformerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
