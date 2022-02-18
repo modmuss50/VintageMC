@@ -6,14 +6,16 @@ import net.fabricmc.loom.api.mappings.layered.MappingsNamespace;
 import net.fabricmc.loom.configuration.processors.JarProcessor;
 import net.fabricmc.loom.util.FileSystemUtil;
 import net.fabricmc.loom.util.TinyRemapperHelper;
+import net.fabricmc.loom.util.ZipUtils;
+import net.fabricmc.lorenztiny.TinyMappingsReader;
 import net.fabricmc.tinyremapper.NonClassCopyMode;
 import net.fabricmc.tinyremapper.OutputConsumerPath;
 import net.fabricmc.tinyremapper.TinyRemapper;
+import org.cadixdev.at.AccessTransformSet;
+import org.cadixdev.lorenz.MappingSet;
 import org.gradle.api.Project;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -115,7 +117,39 @@ public class ForgeJarProcessor implements JarProcessor {
             tinyRemapper.finish();
         }
 
+        final LoomGradleExtension extension = LoomGradleExtension.get(project);
+        final MappingSet mappingSet;
+
+        try (TinyMappingsReader reader = new TinyMappingsReader(extension.getMappingsProvider().getMappings(), MappingsNamespace.OFFICIAL.toString(), MappingsNamespace.NAMED.toString())) {
+            mappingSet = reader.read();
+        }
+
+        ZipUtils.transformString(output, Map.of(
+            "fml_at.cfg", remapAT(mappingSet),
+            "forge_at.cfg", remapAT(mappingSet)
+        ));
+
         return output;
+    }
+
+    private ZipUtils.UnsafeUnaryOperator<String> remapAT(MappingSet mappingSet) {
+        return arg -> {
+            AccessTransformSet accessTransformer;
+
+            try (BufferedReader reader = new BufferedReader(new StringReader(arg))) {
+                accessTransformer = FmlLegacyATReader.read(reader);
+            }
+
+            accessTransformer = accessTransformer.remap(mappingSet);
+
+            final Writer writer = new StringWriter();
+
+            try (BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
+                new FmlLegacyATWriter(bufferedWriter).write(accessTransformer);
+            }
+
+            return writer.toString();
+        };
     }
 
     @Override

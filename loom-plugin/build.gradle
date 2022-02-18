@@ -19,7 +19,9 @@ dependencies {
     implementation 'net.fabricmc:fabric-loom:0.12.local'
     implementation 'net.fabricmc:mapping-io:0.2.1'
     implementation 'net.fabricmc:tiny-remapper:0.8.1'
+    implementation 'net.fabricmc:lorenz-tiny:4.0.2'
     implementation 'com.google.guava:guava:31.0.1-jre'
+    implementation 'org.cadixdev:at:0.1.0-rc1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.2'
 }
