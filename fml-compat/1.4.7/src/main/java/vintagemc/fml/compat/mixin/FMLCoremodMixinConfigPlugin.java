@@ -2,12 +2,15 @@ package vintagemc.fml.compat.mixin;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import net.fabricmc.loader.impl.launch.knot.MixinServiceKnot;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.asm.transformers.MixinClassWriter;
 import org.spongepowered.asm.util.ReEntranceLock;
 import vintagemc.fml.compat.coremod.CoreModLocator;
 
@@ -19,12 +22,11 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class FMLCoremodMixinConfigPlugin implements IMixinConfigPlugin {
@@ -73,21 +75,30 @@ public class FMLCoremodMixinConfigPlugin implements IMixinConfigPlugin {
         List<String> classes = new ArrayList<>();
         Path minecraftJar = FabricLoader.getInstance().getModContainer("minecraft").orElseThrow().getOrigin().getPaths().get(0);
 
-        try (FileSystem fs = getJarFileSystem(minecraftJar.toUri(), false);
-             Stream<Path> walk = Files.walk(fs.getPath("/"))) {
-            Iterator<Path> iterator = walk.iterator();
+        List<Path> jarsToScan = new ArrayList<>();
 
-            while (iterator.hasNext()) {
-                Path fsPath = iterator.next();
+        jarsToScan.add(minecraftJar);
 
-                if (fsPath.toString().endsWith(".class")) {
-                    if (!validForCurrentSide(fsPath)) continue;
+        // TODO fix this!
+        jarsToScan.add(Paths.get("./industrialcraft-2_1.115.231-lf.jar"));
 
-                    classes.add(fsPath.toString().substring(1).replace(".class", ""));
+        for (Path jar : jarsToScan) {
+            try (FileSystem fs = getJarFileSystem(jar.toUri(), false);
+                 Stream<Path> walk = Files.walk(fs.getPath("/"))) {
+                Iterator<Path> iterator = walk.iterator();
+
+                while (iterator.hasNext()) {
+                    Path fsPath = iterator.next();
+
+                    if (fsPath.toString().endsWith(".class")) {
+                        if (!validForCurrentSide(fsPath)) continue;
+
+                        classes.add(fsPath.toString().substring(1).replace(".class", ""));
+                    }
                 }
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
             }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
         }
 
         return classes;
@@ -200,7 +211,7 @@ public class FMLCoremodMixinConfigPlugin implements IMixinConfigPlugin {
     }
 
     private static byte[] writeClassToBytes(ClassNode classNode) {
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+        ClassWriter writer = new ClassWriter(0);
         classNode.accept(writer);
         return writer.toByteArray();
     }

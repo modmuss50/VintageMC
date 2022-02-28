@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 
 public class ForgeJarProcessor implements JarProcessor {
     private static final Map<String, String> FML_SIDE_TO_LOADER = new ImmutableMap.Builder<String, String>()
-            .put("cpw/mods/fml/relauncher/SideOnly", "net/fabricmc/api/Environment")
-            .put("cpw/mods/fml/relauncher/Side", "net/fabricmc/api/EnvType")
+//            .put("cpw/mods/fml/relauncher/SideOnly", "net/fabricmc/api/Environment")
+//            .put("cpw/mods/fml/relauncher/Side", "net/fabricmc/api/EnvType")
             .build();
 
 

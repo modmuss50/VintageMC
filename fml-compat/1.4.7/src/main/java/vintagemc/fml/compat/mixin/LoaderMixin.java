@@ -1,10 +1,17 @@
 package vintagemc.fml.compat.mixin;
 
+import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.LoaderState;
 import cpw.mods.fml.relauncher.FMLRelauncher;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import vintagemc.fml.compat.FMLPreLaunch;
+
+import java.util.Arrays;
+import java.util.function.Function;
 
 @Mixin(Loader.class)
 public class LoaderMixin {

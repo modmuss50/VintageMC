@@ -17,7 +17,11 @@
     "ASMModParserMixin",
     "RelaunchLibraryManagerMixin",
     "FMLInjectionDataMixin",
-    "EventTransformerMixin"
+    "EventTransformerMixin",
+    "RelaunchClassLoaderMixin",
+    "ModClassLoaderMixin",
+    "EnumHelperMixin",
+    "FMLModContainerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

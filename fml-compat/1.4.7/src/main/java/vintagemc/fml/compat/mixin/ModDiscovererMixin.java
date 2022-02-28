@@ -1,5 +1,6 @@
 package vintagemc.fml.compat.mixin;
 
+import java.io.File;
 import java.util.List;
 
 import cpw.mods.fml.common.ModClassLoader;
@@ -22,5 +23,11 @@ public class ModDiscovererMixin {
 	public void findClasspathMods(ModClassLoader modClassLoader, CallbackInfo info) {
 		// Look for fabric mods.
 		this.candidates.addAll(FabricModDiscoverer.findCandidates());
+	}
+
+	@Inject(method = "findModDirMods", at = @At("HEAD"), remap = false, cancellable = true)
+	public void findModDirMods(File modFile, CallbackInfo ci) {
+		// Nope, fabric loader has already loaded these onto the classpath.
+		ci.cancel();
 	}
 }

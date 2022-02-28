@@ -7,6 +7,7 @@
 !/fml-compat
 !/loom-plugin
 !/mcp
+!/prod-test
 
 /mcp/*.zip
 

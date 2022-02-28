@@ -15,3 +15,6 @@ includeBuild 'loom-plugin'
 
 include 'fml-compat'
 include 'fml-compat:1.4.7'
+
+include "prod-test"
+include "prod-test:1.4.7"

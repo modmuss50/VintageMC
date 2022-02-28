@@ -31,6 +31,8 @@ public class FabricModDiscoverer {
 		List<ModCandidate> candidates = new ArrayList<>();
 
 		for (ModContainer modContainer : FabricLoader.getInstance().getAllMods()) {
+			if (modContainer.getMetadata().getId().equals("ic2")) continue;
+
 			List<Path> paths = modContainer.getOrigin().getPaths();
 			Path modPath = paths.get(0); // A bit of a bad assumption, but best we can do for now.
 
